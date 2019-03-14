@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>修改密码</title>
+    <link href="./css/global.css" rel="stylesheet">
+    <link href="./css/common.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/jquery.dataTables.css">
+    <link rel="stylesheet" href="./css/zpageNav.css">
+
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+</head>
+
+<body>
+    <div class="navbar fix">
+        <div class="logo fl">
+            <a href="javascript:;">
+                <img src="./img/logo.png" alt="">
+                <span>设备二维码管理系统</span>
+            </a>
+        </div>
+        <div class="right-btn fr">
+            <a href="./changePwd.html" class="blue">修改密码</a>
+            <a href="javascript:;" class="red">退出登录</a>
+        </div>
+    </div>
+    <div class="main-container fix">
+        <div class="sidebar-box fl">
+            <div class="sidebar">
+                <ul class="nav-list">
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text">设备坐标 </span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./device_coordinates.html">
+                                    设备坐标
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text"> 设备列表 </span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./device_list.html">
+                                    设备列表
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text">工程师管理</span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./engineer_management.html">
+                                    工程师管理
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text">故障报告</span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./failure_report.html">
+                                    故障报告
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="page-content">
+                <div class="retrieval">
+                    <div class="tablebox">
+                        <h3 class="change_pwd_title">修改密码</h3>
+                        <div class="change_pwd_box">
+                            <div class="resetBox">
+                                <input type="password" class="old_pwd" placeholder="请输入原密码" datatype="*">
+                                <input type="password" class="new_pwd" placeholder="请输入新密码" datatype="*">
+                                <input type="password" class="new_pwd new_pwd_rep" placeholder="请再次输入新密码" datatype="*">
+                            </div>
+                            <button class="btn" id="reset">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/index.js"></script>
+    <script src='./js/custom-nav.js'></script>
+    <script src="./js/alertPopShow.js"></script>
+    <script>
+        $(function(){
+            $('#reset').click(function(){
+                var old_pwd = $('.old_pwd').val();
+                var new_pwd = $('.new_pwd').val();
+                var new_pwd_rep = $('.new_pwd_rep').val();
+                if(old_pwd==''){
+                    webToast('请输入原密码！', "middle", 1000);
+                    return;
+                }
+                if(new_pwd==''){
+                    webToast('请输入新密码！', "middle", 1000);
+                    return;
+                }
+                if(new_pwd!=new_pwd_rep){
+                    webToast('请保持新密码输入一致！', "middle", 1000);
+                    return;
+                }
+                $.ajax({
+                    url: $.config.api + 'admin/cp',
+                    type: 'post',
+                    data: {
+                        oldpwd:old_pwd,
+                        newpwd:new_pwd
+                    },
+                    success: function (res) {
+                        if(res.Status=='1'){
+                            webToast(res.Msg, "middle", 2000);
+                            setTimeout(function(){
+                                window.location.href='./login.html'
+                            },2000)
+                        }
+                        
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>

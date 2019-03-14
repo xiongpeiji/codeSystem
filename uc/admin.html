@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>故障报修页</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" type="text/css" href="./css/common.css" />
+    <link rel="stylesheet" type="text/css" href="./css/login.css" />
+
+</head>
+
+<body>
+    <div class="equip_container-header">
+        <span>激活二维码</span>
+    </div>
+    <div class="equip_container">
+        <div class="equip_box">
+            <div class="quuip_title">
+                <h3>二维码位置设置</h3>
+            </div>
+            <div class="map_box" id="allmap"></div>
+
+        </div>
+        <h3 class="title_text">
+            <span>备注：</span>
+            <span class="tips">(必填)</span>
+        </h3>
+        <div class="input_box">
+            <input type="text" id='message' placeholder="请输入备注信息" />
+        </div>
+        <button type="button"  class="btn btn-block" id='setting'>设置</button>
+    </div>
+
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/global.js"></script>
+    <script type="text/javascript" src="./js/alertPopShow.js"></script>
+    <script type="text/javascript" src="./js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="./js/jquery.jsoncookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=Aj424jND3faxg0ZTVeeXGV5Ak0tsNjTU"></script>
+    <script src="./js/rem.js"></script>
+    <script>
+
+        $(function () {
+            var id = GetQueryString('id'),
+                message = $('#message'),
+                deviceId = null,
+                ready = false,
+                latitude = 0,
+                longitude = 0;
+            function getCodeStatus() {
+                //获取二维码信息
+                var data = {
+                    num: id
+                }
+                $.ajax({
+                    url: $.config.api + 'device/info',
+                    type: 'POST',
+                    data: data,
+                    success: function (res) {
+                        if (res.Status == 1) {
+                            deviceId = res.Data.device.id;
+                        } else {
+                            webToast(res.Msg, "middle", 2000);
+                        }
+                    }
+                })
+            }
+            //获取二维码信息
+            getCodeStatus();
+            function getLocation() {
+                var map = new BMap.Map("allmap");
+                var point = new BMap.Point(116.331398, 39.897445),
+                    address = '';
+                map.centerAndZoom(point, 18);
+                var geolocation = new BMap.Geolocation();
+                geolocation.getCurrentPosition(function (r) {
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                        var mk = new BMap.Marker(r.point);
+                        map.addOverlay(mk);
+                        map.panTo(r.point);
+                        var geoc = new BMap.Geocoder();
+                        geoc.getLocation(r.point, function (rs) {
+                            var addComp = rs.addressComponents;
+                            address = addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber;
+                            message.val(address);
+                        });
+                        map.addEventListener("click", function (e) {
+                            var pt = e.point;
+                            geoc.getLocation(pt, function (rs) {
+                                var addComp = rs.addressComponents;
+                                address = addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber;
+                                message.val(address);
+                            });
+                        });
+                        // alert('您的位置：'+r.point.lng+','+r.point.lat);
+                        longitude = r.point.lng;
+                        latitude = r.point.lat;
+                        ready = true;
+                        console.log(r.point.lng)
+                        console.log(r.point.lat)
+                    }
+                    else {
+                        webToast(this.getStatus(), "middle", 2000);
+                    }
+                });
+            };
+            getLocation();
+
+            $('#setting').click(function () {
+                if (ready && deviceId) {
+                    $.ajax({
+                        url: $.config.api + 'uc/device/act',
+                        type: 'post',
+                        data: {
+                            id: deviceId,
+                            longitude: longitude,
+                            latitude: latitude,
+                            position: message.val()
+                        },
+                        beforeSend:function(){
+                            $('#setting').attr('disabled',true)
+                        },
+                        success: function (res) {
+                            webToast(res.Msg, "middle", 2000);
+                            $('#setting').removeAttr('disabled')
+                            setTimeout(function () {
+                                location.reload();
+                            }, 2000)
+                        }
+                    })
+                } else {
+                    webToast('正在获取定位，请稍后', "middle", 2000);
+                }
+            });
+        })
+    </script>
+</body>
+
+</html>

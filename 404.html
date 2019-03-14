@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>error</title>
+    <link href="css/global.css" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+</head>
+<body>
+    <div class="error">
+        <p>点击<a onclick="window.location.reload()">刷新</a>，<span></span>秒钟后自动跳转到主页或立即<a href="javascript:;">返回主页</a></p>
+    </div>
+    <script>
+        var timer=null;
+        var num=5;
+        $(".error span").html(num);
+        timer=setInterval(function(){
+            num=num-1;
+            $(".error span").html(num);
+            if(num==0){
+                window.location.href="http://www.baidu.com";
+                clearInterval(timer);
+            }
+        },1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>故障报修页</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" type="text/css" href="./css/common.css" />
+    <link rel="stylesheet" type="text/css" href="./css/login.css" />
+    
+</head>
+
+<body>
+    <div class="equip_container-header">
+        <span>故障报修</span>
+    </div>
+    <div class="equip_container" id='app'>
+        <h3 class="title_text">故障内容</h3>
+        <div class="report_cont">
+            <ul class="report_ul">
+                <template v-for='(v, i) in faultOption'>
+                    <li :class='v.active ? "active": ""' @click='selectError(i)'>{{v.val}}</li>
+                </template>
+                <li class="last_li">
+                    <input v-model='other' type="text" placeholder="请勾选其它，再填写其它故障" />
+                </li>
+            </ul>
+        </div>
+        <!--         <div class="isReply">
+            <div class="pub_box">是/否需要回复</div>
+        </div> -->
+        <h3 class="title_text">
+            <span>报修人</span>
+            <!-- <span class="tips">(必填)</span> -->
+            <!-- <div class="right_con">
+                <div class="pub_box">先生</div>
+                <div class="pub_box">女士</div>
+            </div> -->
+        </h3>
+        <div class="input_box">
+            <input v-model='name' type="text" placeholder="请输入姓名" />
+        </div>
+        <h3 class="title_text">
+            <span>联系方式</span>
+            <!-- <span class="tips">(必填)</span> -->
+        </h3>
+        <div class="input_box">
+            <input v-model='phone' type="text" placeholder="请输入联系电话" />
+        </div>
+        <h3 class="title_text">
+            <span>拍照</span>
+            <!-- <span class="tips">(必填)</span> -->
+        </h3>
+        <div class="cameraBtn">
+            <div id="preview">
+                <img id="imghead" border="0" src="./img/photo_icon.png"  onclick="$('#previewImg').click();">
+             </div>
+             <input type="file" @change="change" accept="image/*" capture="camera" onchange="previewImage(this)" style="display: none;" id="previewImg">
+        </div>
+        
+
+        <a class="btn btn-block" @click='sendReport'>故障上报</a>
+
+    </div>
+    <div class="loading">
+        <img src="img/timg.gif" />
+    </div>
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/global.js"></script>
+    <script type="text/javascript" src="./js/alertPopShow.js"></script>
+    <script type="text/javascript" src="./js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="./js/jquery.jsoncookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery.cookie.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/rem.js"></script>
+    <script>
+        //图片上传预览    IE是用了滤镜。
+          function previewImage(file){
+            var MAXWIDTH  = 90; 
+            var MAXHEIGHT = 90;
+            var div = document.getElementById('preview');
+            if (file.files && file.files[0])
+            {
+                div.innerHTML ='<img id=imghead onclick=$("#previewImg").click()>';
+                var img = document.getElementById('imghead');
+                img.onload = function(){
+                  var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+                  img.width  =  rect.width;
+                  img.height =  rect.height;
+                //   img.style.marginLeft = rect.left+'px';
+                //   img.style.marginTop = rect.top+'px';
+                }
+                var reader = new FileReader();
+                reader.onload = function(evt){img.src = evt.target.result;}
+                reader.readAsDataURL(file.files[0]);
+            }
+            else //兼容IE
+            {
+              var sFilter='filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src="';
+              file.select();
+              var src = document.selection.createRange().text;
+              div.innerHTML = '<img id=imghead>';
+              var img = document.getElementById('imghead');
+              img.filters.item('DXImageTransform.Microsoft.AlphaImageLoader').src = src;
+              var rect = clacImgZoomParam(MAXWIDTH, MAXHEIGHT, img.offsetWidth, img.offsetHeight);
+              status =('rect:'+rect.top+','+rect.left+','+rect.width+','+rect.height);
+              div.innerHTML = "<div id=divhead style='width:"+rect.width+"px;height:"+rect.height+"px;margin-top:"+rect.top+"px;"+sFilter+src+"\"'></div>";
+            }
+          }
+          function clacImgZoomParam( maxWidth, maxHeight, width, height ){
+              var param = {top:0, left:0, width:width, height:height};
+              if( width>maxWidth || height>maxHeight ){
+                  rateWidth = width / maxWidth;
+                  rateHeight = height / maxHeight;
+                  
+                  if( rateWidth > rateHeight ){
+                      param.width =  maxWidth;
+                      param.height = Math.round(height / rateWidth);
+                  }else{
+                      param.width = Math.round(width / rateHeight);
+                      param.height = maxHeight;
+                  }
+              }
+              param.left = Math.round((maxWidth - param.width) / 2);
+              param.top = Math.round((maxHeight - param.height) / 2);
+              return param;
+          }
+      </script>
+    <script>
+        var id = GetQueryString('id');
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                deviceId: null,
+                faultOption: [],
+                other: "",
+                phone: "",
+                name: "",
+                camera: ""
+            },
+            created() {
+                var that = this;
+                $.ajax({
+                    url: $.config.api + 'device/info',
+                    type: 'POST',
+                    data: {
+                        num: id
+                    },
+                    success: function (res) {
+                        if (Number(res.Status) === 1) {
+                            var id = res.Data.device.id;
+                            var faultOption = res.Data.device.deviceType.faultOption;
+                            var arr = faultOption.split('|'),
+                                newArr = [];
+                            arr.map(v => {
+                                var o = {
+                                    val: v,
+                                    active: false
+                                }
+                                newArr.push(o);
+                            });
+                            newArr.push({
+                                id: 'other',
+                                val: '其他',
+                                ative: false
+                            })
+                            that.faultOption = newArr;
+                            that.deviceId = id;
+                        }
+                    }
+                })
+            },
+            methods: {
+                change(e) {
+                    var camera = e.srcElement.files[0];
+                    this.camera = camera;
+                },
+                selectError(i) {
+                    var list = this.faultOption,
+                        cur = list[i];
+                    if (cur) {
+                        cur.active = !cur.active;
+                    }
+                    this.faultOption = list;
+                },
+                sendReport() {
+                    var data = {},
+                        that = this,
+                        formData = new FormData(),
+                        select = [];
+                    this.faultOption.map(v => {
+                        if (v.active) {
+                            select.push(v.val)
+                        }
+                        if (v.id === 'other') {
+                            select.push(this.other)
+                        }
+                    });
+                    if (select == '') {
+                        webToast('请选择或设备故障内容', "middle", 2000);
+                        return;
+                    }
+                    $('.loading').show();
+                    formData.append("id", that.deviceId);
+                    formData.append("des", select.join(','));
+                    formData.append("name", this.name);
+                    formData.append("mobile", this.phone);
+                    formData.append("file", this.camera);
+                    $.ajax({
+                        type: 'post',
+                        url: $.config.api + '/device/report',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (res) {
+                            if (res.Status == 1) {
+                                $('.loading').hide();
+                                webToast(res.Msg, "middle", 2000);
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 2000)
+                            } else {
+                                webToast(res.Msg, "middle", 2000);
+                            }
+                        }
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>设备坐标</title>
+    <link href="./css/global.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/jquery.dataTables.css">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+</head>
+
+<body>
+    <div class="navbar fix">
+        <div class="logo fl">
+            <a href="javascript:;">
+                <img src="./img/logo.png" alt="">
+                <span>设备二维码管理系统</span>
+            </a>
+        </div>
+        <div class="right-btn fr">
+            <a href="./changePwd.html" class="blue">修改密码</a>
+            <a href="javascript:;" class="red">退出登录</a>
+        </div>
+    </div>
+    <div class="main-container fix">
+        <div class="sidebar-box fl">
+            <div class="sidebar">
+                <ul class="nav-list">
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text">设备坐标 </span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./device_coordinates.html" class="active">
+                                    设备坐标
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text"> 设备列表 </span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./device_list.html">
+                                    设备列表
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text">工程师管理</span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./engineer_management.html">
+                                    工程师管理
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <span class="menu-text">故障报告</span>
+                            <b class="arrow"></b>
+                        </a>
+
+                        <ul class="submenu">
+                            <li>
+                                <a href="./failure_report.html">
+                                    故障报告
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- <div class="breadcrumbs">
+                管理员列表
+            </div> -->
+            <div class="page-content">
+                <div class="retrieval">
+                    <button class="btn" style="position: absolute;left: 200px;z-index: 1;">添加管理员</button>
+                    <div class="tablebox">
+                        <table class="display" cellpadding="0" cellspacing="0" border="0" id="manage">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>管理员名称</th>
+                                    <th>管理员帐号</th>
+                                    <th>角色组</th>
+                                    <th>添加时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>SuperSoong</td>
+                                    <td>超级管理员</td>
+                                    <td>普通管理员</td>
+                                    <td>2016-11-23 10:11:19</td>
+                                    <td>正常</td>
+                                    <td>
+                                        <div>
+                                            <a href="javascript:;">
+                                                <i class="icon-pen"></i>
+                                            </a>
+                                            <a href="javascript:;">
+                                                <i class="icon-password"></i>
+                                            </a>
+                                            <a href="javascript:;">
+                                                <i class="icon-delete"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>SuperSoong</td>
+                                    <td>超级管理员</td>
+                                    <td>超级管理员</td>
+                                    <td>2016-11-22 10:11:19</td>
+                                    <td>正常</td>
+                                    <td>
+                                        <div>
+                                            <a href="javascript:;">
+                                                <i class="icon-pen"></i>
+                                            </a>
+                                            <a href="javascript:;">
+                                                <i class="icon-password"></i>
+                                            </a>
+                                            <a href="javascript:;">
+                                                <i class="icon-delete"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/index.js"></script>
+</body>
+
+</html>

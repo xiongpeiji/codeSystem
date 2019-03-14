@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>工程师登录</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" type="text/css" href="./css/common.css" />
+    <link rel="stylesheet" type="text/css" href="./css/login.css" />
+
+</head>
+
+<body>
+    <div class="login-header">
+        <span>工程师登录</span>
+    </div>
+    <div class="login-box">
+        <div class="user-box">
+            <input class="user-name" id="Useraccount" type="text" placeholder="请输入账号">
+        </div>
+        <div class="user-box pwd">
+            <input class="user-pass" id="UserPassWord" type="password" placeholder="请输入交易密码">
+        </div>
+        <a class="btn btn-block" id="passlogin">登录</a>
+    </div>
+
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <script type="text/javascript" src="./js/global.js"></script>
+    <script type="text/javascript" src="./js/alertPopShow.js"></script>
+    <script type="text/javascript" src="./js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="./js/jquery.jsoncookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery.cookie.js"></script>
+    <script src="./js/rem.js"></script>
+    <script>
+        $(function () {
+        	var id =GetQueryString('id');
+        	function getCodeStatus(){
+        		
+        		console.log(id);
+        		//获取二维码信息
+        		var data={
+        			num:id
+        		}
+        		$.ajax({
+					url:$.config.api+'device/info',
+					type:'POST',
+					data:data,
+					success:function(res){
+						console.log(res)
+						if(res.Status==1){
+							//1 未激活 2激活 3故障
+							//如果二维码是未激活并且已登录状态
+							if(res.Data.device.status==1&&res.Data.login){
+								window.location.href='admin.html?id='+id
+							//如果二维码已被激活，去报修页面
+							}else if(res.Data.device.status==2){
+								window.location.href='equipment.html?id='+id
+							}
+						}else{
+							webToast(res.Msg,"middle",2000);
+						}
+					}
+				})
+        	}
+        	//获取二维码信息
+        	getCodeStatus();
+        	
+        	
+        	$('#passlogin').click(function(){
+        		var account = $('#Useraccount').val();
+	        	var pwd = $('#UserPassWord').val();
+	        	if(!account){
+	        		webToast('账号不能为空!',"middle",2000);
+	        		return false;
+	        	}
+	        	if(!pwd){
+	        		webToast('密码不能为空!',"middle",2000);
+	        		return false;
+	        	}
+	        	var data={
+	        		loginName:account,
+	        		passWord:pwd,
+	        	}
+				$.ajax({
+					url:$.config.api+'uc/login',
+					type:'POST',
+					data:data,
+					success:function(res){
+						console.log(res)
+						if(res.Status==1){
+							window.location.href='admin.html?id='+id
+						}else{
+							webToast(res.Msg,"middle",2000);
+						}
+					}
+				})
+        	})
+        	
+        })
+    </script>
+</body>
+
+</html>

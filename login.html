@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理系统登录</title>
+    <link href="./css/global.css" rel="stylesheet">
+    <link href="./css/common.css" rel="stylesheet">
+    <script src="./js/jquery.min.js"></script>
+</head>
+<body class="login_box">
+    <div class="login">
+        <div>
+            <span>
+            </span>
+            
+            <div class="input_msg loginBox">
+                <p class="login-title">登录</p>
+                <input type="text"  class="user_name" placeholder="用户名" datatype="*">
+                <input type="password" class="pwd" placeholder="密码" datatype="*">
+                <p class="forget_pwd">
+                    <!-- <a href="javascript:;" class="reset_pwd">重置密码</a> -->
+                </p>
+                <button class="btn" id="submit">登录</button>
+            </div>
+            <div class="input_msg resetBox" style="display: none">
+                <p class="login-title">重置密码</p>
+                <input type="password" class="old_pwd" placeholder="请输入旧密码" datatype="*">
+                <input type="password" class="new_pwd" placeholder="请输入旧密码" datatype="*">
+                <p class="forget_pwd">
+                    <a href="javascript:;" class="to_login">去登录</a>
+                </p>
+                <button class="btn" id="reset">重置</button>
+            </div>
+        </div>
+    </div>
+    <script src="./js/config.js"></script>
+    <script src="./js/alertPopShow.js"></script>
+    <script>
+        $(function(){
+            //切换
+            $('.reset_pwd').click(function(){
+                $('.loginBox').hide();
+                $('.resetBox').show();
+            })
+            $('.to_login').click(function(){
+                $('.loginBox').show();
+                $('.resetBox').hide();
+            });
+            
+            $('#submit').click(function() {
+                var user_name = $('.user_name').val();
+                var pwd = $('.pwd').val();
+                $.ajax({
+                    url: $.config.api + 'admin/login',
+                    type: 'POST',
+                    data: {
+                        name: user_name,
+                        password: pwd
+                    },
+                    success: function(res) {        
+                        console.log(res);
+                        // var Msg = res.Msg;
+                        if (res.Status == 1) {
+                            window.location.href = './device_coordinates.html'
+                        }else{
+                            webToast(res.Msg,"middle",1000);
+                        }
+                    }
+                })
+            });
+            $('#reset').click(function() {
+                var oldpwd = $('.old_pwd').val();
+                var newpwd = $('.new_pwd').val();
+                $.ajax({
+                    url: $.config.api + 'admin/cp',
+                    type: 'POST',
+                    data: {
+                        oldpwd: oldpwd,
+                        newpwd: newpwd
+                    },
+                    success: function(res) {        
+                        console.log(res);
+                        // var Msg = res.Msg;
+                        if (res.Status == 1) {
+                            window.location.href = './device_coordinates.html'
+                        }
+                    }
+                })
+            });
+        })
+    </script>
+</body>
+</html>
